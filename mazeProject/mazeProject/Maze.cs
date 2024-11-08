@@ -1,12 +1,12 @@
-﻿//Програма має працювати завжди!
-
-//Лабіринт
-//Собака
-//Керування
-//Вихід
-using System.Runtime.CompilerServices;
-
-class Program
+﻿class Program
+{
+    static void Main(string[] args)
+    {
+        Maze maze = new Maze();
+        maze.GameProcess();
+    }
+}
+public class Maze
 {
     static Random random = new Random();
 
@@ -37,6 +37,12 @@ class Program
     static int jetpackY = 0;
     static int jetpackSpeed = 2;
     static int jetpackTimer = 0;
+
+    //GameTimer
+    static int gameTime = 5;
+
+    //GameEnd
+    static string gameEndSubtitle;
 
     static void generate_field()
     {
@@ -121,6 +127,7 @@ class Program
     {
         dx = 0; dy = 0;
         string inp = Console.ReadLine();
+
         if (inp.Length == 0)
             return;
 
@@ -148,12 +155,15 @@ class Program
             case 'W' or 'w':
                 dy = -dogSpeed;
                 break;
+
             case 'A' or 'a':
                 dx = -dogSpeed;
                 break;
+
             case 'S' or 's':
                 dy = dogSpeed;
                 break;
+
             case 'D' or 'd':
                 dx = dogSpeed;
                 break;
@@ -164,11 +174,13 @@ class Program
     static void JetpackLogic()
     {
         jetpackTimer--;
+
         if (jetpackTimer == 0)
         {
             jetpackIsActive = false;
             return;
         }
+
         if (jetpackIsActive == true)
         {
             dx *= jetpackSpeed;
@@ -186,6 +198,7 @@ class Program
         {
             return false;
         }
+
         return true;
     }
     static void go_to(int newX,int newY)
@@ -222,6 +235,13 @@ class Program
 
     static bool is_end_game()
     {
+        if(gameTime == 0)
+        {
+            gameEndSubtitle = "Час скінчився...Стіни зімкнулись й собака перетворилась в начинку для хотдогу";
+            return true;
+        }
+
+        gameEndSubtitle = "Гравець дійшов до фініша та переміг!";
         return reached_finish;
     }
 
@@ -232,15 +252,21 @@ class Program
         return true;
     }
 
+    static void TimerLogic()
+    {
+        gameTime--;
+        Console.WriteLine("Лишилось ходів:" + gameTime);
+    }
+
     static void logic()
     {
         JetpackLogic();
         try_go_to(dogX + dx,dogY + dy);
         check_finish();
         CheckJetPack();
+        TimerLogic();
     }
-
-    static void Main(string[] args)
+    public void GameProcess()
     {
         generate();
         draw();
@@ -252,7 +278,7 @@ class Program
             draw();
         }
 
-        Console.WriteLine("Гравець переміг!!!");
+        Console.WriteLine(gameEndSubtitle);
     }
 }
 
