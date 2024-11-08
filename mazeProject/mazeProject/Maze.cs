@@ -14,7 +14,7 @@ public class Maze
     static char[,] field;
     static int width = 10;
     static int height = 12;
-    static int block_freq = 28;
+    static int blockFreq = 28;
 
     //dog
     static char dog = '@';
@@ -28,7 +28,7 @@ public class Maze
     //finish
     static int finishX = 0;
     static int finishY = 0;
-    static bool reached_finish = false;
+    static bool reachedFinish = false;
 
     //JetPack
     static bool jetpackAvalaible = false;
@@ -39,12 +39,12 @@ public class Maze
     static int jetpackTimer = 0;
 
     //GameTimer
-    static int gameTime = 5;
+    static int gameTime = 15;
 
     //GameEnd
     static string gameEndSubtitle;
 
-    static void generate_field()
+    static void GenerateField()
     {
         field = new char[height, width];
 
@@ -54,7 +54,7 @@ public class Maze
             {
                 char symbol;
                 int rand_num = random.Next(0, 100);
-                if (rand_num < block_freq)
+                if (rand_num < blockFreq)
                     symbol = '#';
                 else
                     symbol = '.';
@@ -63,7 +63,7 @@ public class Maze
         }
     }
 
-    static void draw()
+    static void Draw()
     {
         for (int i = 0; i < height; i++)
         {
@@ -76,6 +76,7 @@ public class Maze
                     symbol = field[i, j];
                 Console.Write(symbol);
             }
+
             Console.WriteLine();
         }
     }
@@ -99,7 +100,7 @@ public class Maze
         field[finishY, finishX] = 'F';
     }
 
-    static void place_dog()
+    static void PlaceDog()
     {
         var point = GetRandomPoint();
 
@@ -115,15 +116,15 @@ public class Maze
         return (pointX, pointY);
     }
 
-    static void generate()
+    static void Generate()
     {
-        generate_field();
+        GenerateField();
         PlaceFinish();
         PlaceJetPack();
-        place_dog();
+        PlaceDog();
     }
 
-    static void get_input()
+    static void GetInput()
     {
         dx = 0; dy = 0;
         string inp = Console.ReadLine();
@@ -187,29 +188,30 @@ public class Maze
             dy *= jetpackSpeed;
         }
     }
-    static bool can_go_to(int newX, int newY)
+    static bool CanGoTo(int newX, int newY)
     {
         if (newX < 0 || newY < 0 || newX >= width || newY >= height)
         {
             return false;
         }
 
-        if (!is_walkable(newX, newY))
+        if (!IsWalkable(newX, newY))
         {
             return false;
         }
 
         return true;
     }
-    static void go_to(int newX,int newY)
+    static void GoTo(int newX,int newY)
     {
-        dogX = newX;dogY = newY;
+        dogX = newX;
+        dogY = newY;
     }
-    static void try_go_to(int newX,int newY)
+    static void TryGoTo(int newX,int newY)
     {
-        if (can_go_to(newX, newY))
+        if (CanGoTo(newX, newY))
         {
-            go_to(newX, newY);
+            GoTo(newX, newY);
         }
     }
 
@@ -225,15 +227,15 @@ public class Maze
         }
     }
 
-    static void check_finish()
+    static void CheckFinish()
     {
         if (dogX == finishX && dogY == finishY)
         {
-            reached_finish = true;
+            reachedFinish = true;
         }
     }
 
-    static bool is_end_game()
+    static bool IsEndGame()
     {
         if(gameTime == 0)
         {
@@ -242,40 +244,42 @@ public class Maze
         }
 
         gameEndSubtitle = "Гравець дійшов до фініша та переміг!";
-        return reached_finish;
+        return reachedFinish;
     }
 
-    static bool is_walkable(int X,int Y)
+    static bool IsWalkable(int X,int Y)
     {
         if (field[Y,X] == '#')
             return false;
+
         return true;
     }
 
     static void TimerLogic()
     {
         gameTime--;
+
         Console.WriteLine("Лишилось ходів:" + gameTime);
     }
 
-    static void logic()
+    static void Logic()
     {
         JetpackLogic();
-        try_go_to(dogX + dx,dogY + dy);
-        check_finish();
+        TryGoTo(dogX + dx,dogY + dy);
+        CheckFinish();
         CheckJetPack();
         TimerLogic();
     }
     public void GameProcess()
     {
-        generate();
-        draw();
+        Generate();
+        Draw();
 
-        while (!is_end_game())
+        while (!IsEndGame())
         {
-            get_input();
-            logic();
-            draw();
+            GetInput();
+            Logic();
+            Draw();
         }
 
         Console.WriteLine(gameEndSubtitle);
